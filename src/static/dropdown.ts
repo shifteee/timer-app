@@ -1,0 +1,2 @@
+const DROPDOWN_RANGE_MIN = 0;
+const DROPDOWN_RANGE_MAX = 10;
