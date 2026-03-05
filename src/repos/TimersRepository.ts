@@ -2,8 +2,8 @@ export default class TimersRepository implements IRepository<Timer> {
     private readonly storageKey = 'timers_storage';
 
     constructor(
-        private readonly transport: ITransport,
-        private readonly parser: IParser,
+        private readonly transport: ITransport<StorageResponse<SerializedTimer>>,
+        private readonly parser: IParser<SerializedTimer, Timer>,
     ) { }
 
     async get(key: string): Promise<Timer | undefined> {
@@ -13,7 +13,7 @@ export default class TimersRepository implements IRepository<Timer> {
             return undefined;
         }
 
-        return this.parser.parse<SerializedTimer, Timer>(storage[key]);
+        return this.parser.parse(storage[key]);
     }
 
     async getAll(): Promise<Timer[]> {
@@ -24,25 +24,37 @@ export default class TimersRepository implements IRepository<Timer> {
         }
 
         return Object.values(storage).map(timer =>
-            this.parser.parse<SerializedTimer, Timer>(timer)
+            this.parser.parse(timer)
         );
     }
 
     async add(key: string, val: Timer): Promise<void> {
         const storage = await this.getStorage() ?? {};
 
-        storage[key] = this.parser.serialize<Timer, SerializedTimer>(val);
+        storage[key] = this.parser.serialize(val);
 
-        await this.transport.save(this.storageKey, storage);
+        const res = await this.setStorage(storage);
+
+        if (res.status === 'error') {
+            throw res.error;
+        }
     }
 
     private async getStorage(): Promise<StorageResponse<SerializedTimer> | undefined> {
-        const result = await this.transport.get<StorageResponse<SerializedTimer>>(this.storageKey);
+        const result = await this.transport.get(this.storageKey);
 
         if (result.status === 'error') {
             throw result.error;
         }
 
+        if (!result.value) {
+            return {};
+        }
+
         return result.value;
+    }
+
+    private async setStorage(val :StorageResponse<SerializedTimer>) {
+        return await this.transport.save(this.storageKey, val);
     }
 }

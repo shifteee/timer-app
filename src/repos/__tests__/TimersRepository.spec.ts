@@ -2,35 +2,52 @@ import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
 import { Interval, DateTime } from 'luxon';
 import TimersRepository from '../TimersRepository';
 
+type IMockedTransport = Mocked<ITransport<StorageResponse<SerializedTimer>>>;
+
 const interval = Interval.fromDateTimes(DateTime.now(), DateTime.now());
 
-function createTransport(responce: SerializedTimer): Mocked<ITransport> {
+function createTransport(): IMockedTransport {
+    let result: StorageResponse<SerializedTimer> | undefined;
+
     return {
-        save: vi.fn(),
-        get: vi.fn().mockImplementation(() => responce),
-    }
+        save: vi.fn().mockResolvedValue(() => ({
+            status: 'ok',
+            value: undefined,
+        })),
+        get: vi.fn().mockImplementation(async () => ({
+            status: 'ok',
+            value: result,
+        })),
+    };
+}
+
+function createParser(): Mocked<IParser<SerializedTimer, Timer>> {
+    let result: SerializedTimer | Timer | undefined;
+
+    return {
+        parse: vi.fn().mockImplementation(() => result),
+        serialize: vi.fn().mockImplementation(() => result),
+    };
 }
 
 describe('TimersRepository', () => {
-    let parserMock: any;
-    let repository: TimersRepository;
-
     const storageKey = 'timers_storage';
+    const parserMock = createParser();
+    const transportMock = createTransport();
+
+    let repository: IRepository<Timer>;
 
     beforeEach(() => {
-        parserMock = {
-            parse: vi.fn(),
-            serialize: vi.fn(),
-        };
+        vi.clearAllMocks();
 
         repository = new TimersRepository(
             transportMock,
-            parserMock
+            parserMock,
         );
     });
 
     it('returns undefined when timer does not exist', async () => {
-        transportMock.get.mockResolvedValue({
+        transportMock.get.mockResolvedValueOnce({
             status: 'ok',
             value: {}
         });
@@ -51,7 +68,7 @@ describe('TimersRepository', () => {
 
         parserMock.parse.mockReturnValue({
             label: 'work',
-            interval: 1000
+            interval,
         });
 
         const result = await repository.get('work');
@@ -59,7 +76,7 @@ describe('TimersRepository', () => {
         expect(parserMock.parse).toHaveBeenCalled();
         expect(result).toEqual({
             label: 'work',
-            interval: 1000
+            interval,
         });
     })
 
@@ -67,7 +84,7 @@ describe('TimersRepository', () => {
         transportMock.get.mockResolvedValue({
             status: 'ok',
             value: undefined
-        })
+        });
 
         const result = await repository.getAll();
 
@@ -78,13 +95,16 @@ describe('TimersRepository', () => {
         transportMock.get.mockResolvedValue({
             status: 'ok',
             value: {
-                work: { label: 'work', interval: '1000' }
+                work: {
+                    label: 'work',
+                    interval: interval.toISOTime(),
+                }
             }
         });
 
         parserMock.parse.mockReturnValue({
             label: 'work',
-            interval: '1000'
+            interval,
         });
 
         const result = await repository.getAll();
@@ -101,37 +121,37 @@ describe('TimersRepository', () => {
 
         parserMock.serialize.mockReturnValue({
             label: 'work',
-            interval,
+            interval: interval.toISOTime(),
         });
 
-        transportMock.save.mockResolvedValue({ status: 'ok' });
+        transportMock.save.mockResolvedValue({ status: 'ok', value: undefined });
 
         await repository.add('work', {
             label: 'work',
             interval,
         });
 
-        expect(parserMock.serialize).toHaveBeenCalled()
+        expect(parserMock.serialize).toHaveBeenCalled();
 
         expect(transportMock.save).toHaveBeenCalledWith(
             storageKey,
             {
                 work: {
                     label: 'work',
-                    interval,
-                }
-            }
-        )
+                    interval: interval.toISOTime(),
+                },
+            },
+        );
     });
 
     it('throws when transport.get returns error', async () => {
         transportMock.get.mockResolvedValue({
             status: 'error',
-            error: new Error('storage failed')
-        })
+            error: new Error('storage failed'),
+        });
 
         await expect(repository.get('work'))
             .rejects
-            .toThrow('storage failed')
+            .toThrow('storage failed');
     });
 });

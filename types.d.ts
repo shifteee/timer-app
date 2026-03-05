@@ -40,20 +40,20 @@ declare global {
 
     type StorageResponse<T> = Record<string, T>;
 
-    interface ITransport {
-        save<T>(key: string, value: T): Promise<Result<void>>
-        get<T>(key: string): Promise<Result<T | undefined>>
+    interface ITransport<T> {
+        save(key: string, value: T): Promise<Result<void>>;
+        get(key: string): Promise<Result<T | undefined>>;
     }
 
-    interface IParser {
-        parse<T, R>(val: T): R
-        serialize<T, R>(val: T): R
+    interface IParser<TSerialized, TDomain> {
+        parse(val: TSerialized): TDomain;
+        serialize(val: TDomain): TSerialized;
     }
 
     interface IRepository<T> {
-        get(key: string): Promise<T | undefined>
-        getAll(): Promise<T[] | undefined>
-        add(key: string, val: T): Promise<void>
+        get(key: string): Promise<T | undefined>;
+        getAll(): Promise<T[]>;
+        add(key: string, val: T): Promise<void>;
     }
 }
 
