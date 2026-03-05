@@ -45,7 +45,7 @@ declare global {
         get(key: string): Promise<Result<T | undefined>>;
     }
 
-    interface IParser<TSerialized, TDomain> {
+    interface IMapper<TSerialized, TDomain> {
         parse(val: TSerialized): TDomain;
         serialize(val: TDomain): TSerialized;
     }

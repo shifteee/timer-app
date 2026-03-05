@@ -21,7 +21,7 @@ function createTransport(): IMockedTransport {
     };
 }
 
-function createParser(): Mocked<IParser<SerializedTimer, Timer>> {
+function createParser(): Mocked<IMapper<SerializedTimer, Timer>> {
     let result: SerializedTimer | Timer | undefined;
 
     return {
