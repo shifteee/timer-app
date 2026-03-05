@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
 import { Interval, DateTime } from 'luxon';
-import TimersRepository from '../TimersRepository';
+import TimerRepository from '../TimerRepository';
 
 type IMockedTransport = Mocked<ITransport<StorageResponse<SerializedTimer>>>;
 
@@ -30,7 +30,7 @@ function createParser(): Mocked<IMapper<SerializedTimer, Timer>> {
     };
 }
 
-describe('TimersRepository', () => {
+describe('TimerRepository', () => {
     const storageKey = 'timers_storage';
     const parserMock = createParser();
     const transportMock = createTransport();
@@ -40,7 +40,7 @@ describe('TimersRepository', () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
-        repository = new TimersRepository(
+        repository = new TimerRepository(
             transportMock,
             parserMock,
         );

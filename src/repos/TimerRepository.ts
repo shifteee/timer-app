@@ -1,4 +1,4 @@
-export default class TimersRepository implements IRepository<Timer> {
+export default class TimerRepository implements IRepository<Timer> {
     private readonly storageKey = 'timers_storage';
 
     constructor(
