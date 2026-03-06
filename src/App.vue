@@ -5,13 +5,13 @@ import ThemeSwitcher from './Components/atoms/ThemeSwitcher/ThemeSwitcher.vue';
 </script>
 <template>
     <main class="app">
-        <header class="app-header">
+        <header class="app__header">
             <ThemeSwitcher />
         </header>
 
-        <div class="app__grid">
+        <div class="app__wrapper timers">
             <Form />
-            <Timers />
+            <Timers/>
         </div>
     </main>
 </template>
@@ -35,25 +35,7 @@ import ThemeSwitcher from './Components/atoms/ThemeSwitcher/ThemeSwitcher.vue';
         gap-6;
 }
 
-.app__title {
-    @apply text-3xl
-        font-semibold
-        text-gray-800
-        dark:text-gray-100;
-}
-
-.theme-switcher {
-    @apply text-sm
-        px-3
-        py-1
-        rounded-md
-        border
-        border-gray-300
-        dark:border-gray-600
-        text-gray-700
-        dark:text-gray-200
-        hover:bg-gray-200
-        dark:hover:bg-gray-700
-        transition;
+.app__wrapper {
+    @apply flex 
 }
 </style>

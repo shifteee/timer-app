@@ -53,6 +53,7 @@ async function save() {
                 type="text"
                 v-model="label"
                 placeholder="Input label"
+                class="timer-form__input"
             />
         </div>
         <Selector
@@ -79,6 +80,7 @@ async function save() {
             class="timer-form__item"
         >
             <button
+                class="timer-form__submit"
                 :disabled="isDisabled"
                 @click="save"
             >
@@ -103,7 +105,7 @@ async function save() {
         gap-3;
 }
 
-.timer-form__item input {
+.timer-form__input {
     @apply w-full
         border
         border-gray-200
@@ -116,7 +118,7 @@ async function save() {
         focus:ring-gray-300;
 }
 
-.timer-form__item button {
+.timer-form__submit {
     @apply w-full
         bg-black
         text-white
