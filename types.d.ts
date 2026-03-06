@@ -1,4 +1,5 @@
 import type { Duration, Interval } from 'luxon';
+import type { Ref } from 'vue';
 
 declare global {
     type Timer = {
@@ -14,19 +15,10 @@ declare global {
     type IsoRange = { startIso: string; intervalIso: string };
 
     type SelectorValues = {
-        days?: number | string;
-        hours?: number | string;
-        minutes?: number | string;
-        seconds?: number | string;
-    };
-
-    type TimeOperations = {
-        getDuration(selectors: SelectorValues): Duration,
-        getIsoRangeString(selectors: SelectorValues): string,
-        getIsoStartAndInterval(selectors: SelectorValues): IsoRange,
-        getIsoFromSelectors(selectors: SelectorValues): IsoRange,
-        checkExpiration(isoDateInterval: string, now: string): boolean,
-        getDiff(begin: string, end: string): Duration,
+        days?: number;
+        hours?: number;
+        minutes?: number;
+        seconds?: number;
     };
 
     type TransportError = {
@@ -46,14 +38,20 @@ declare global {
     }
 
     interface IMapper<TSerialized, TDomain> {
-        parse(val: TSerialized): TDomain;
-        serialize(val: TDomain): TSerialized;
+        toDomain(val: TSerialized): TDomain;
+        toStorage(val: TDomain): TSerialized;
     }
 
     interface IRepository<T> {
         get(key: string): Promise<T | undefined>;
         getAll(): Promise<T[]>;
         add(key: string, val: T): Promise<void>;
+        remove(key: string): Promise<void>;
+    }
+
+    export interface ITimeAdapter {
+        intervalFromISO(value: string): Interval;
+        intervalToISO(interval: Interval): string;
     }
 }
 

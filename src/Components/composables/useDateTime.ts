@@ -1,69 +1,74 @@
-import { DateTime, Duration, Interval } from 'luxon';
+import { DateTime, Interval, Duration } from "luxon";
 
-export default function useDateTime(): TimeOperations {
-    const getDuration = (selectors: SelectorValues) =>
-        Duration.fromObject({
-            days: Number(selectors.days),
-            hours: Number(selectors.hours),
-            minutes: Number(selectors.minutes),
-            seconds: Number(selectors.seconds),
-        });
-    const getIsoStartAndInterval = (selectors: SelectorValues) => {
-        const duration = getDuration(selectors);
-        const start = DateTime.now();
-        const end = start.plus(duration);
-        const startIso = start.toISO() ?? '';
-        const intervalIso = Interval.fromDateTimes(start, end).toISO() ?? '';
+export type DurationInput = {
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+};
 
-        return { startIso, intervalIso };
-    };
-    const getIsoRangeString = (selectors: SelectorValues) => {
-        const { intervalIso } = getIsoStartAndInterval(selectors);
+export default function useDateTime() {
 
-        return intervalIso;
-    };
-    const getIsoFromSelectors = (selectors: SelectorValues) => getIsoStartAndInterval(selectors);
-
-    const checkExpiration = (timerEnd :string, now :string): boolean => {
-        const interval = Interval.fromISO(timerEnd);
-        const current = DateTime.fromISO(now);
-
-        Interval.isInterval
+    function getDateTimeElements(intervalIso: string) {
+        const interval = Interval.fromISO(intervalIso);
 
         if (!interval.isValid) {
-            throw new Error('Wrong DateTime object');
+            throw new Error(`Invalid ISO interval: ${intervalIso}`);
         }
 
-        return current > interval.end;
+        const { start, end } = interval;
+
+        if (!start || !end) {
+            throw new Error(`Interval boundaries are missing: ${intervalIso}`);
+        }
+
+        return { start, end };
     }
 
-    const getDiff = (begin: string, end: string): Duration<true> => {
-        const isoEnd = DateTime.fromISO(end);
-        const isoBegin = DateTime.fromISO(begin);
+    function getRemains(end: DateTime, now: DateTime): Duration {
+        const diff = end.diff(now);
 
-        if (!isoEnd.isValid) {
-            throw new Error('Expiration date is invalid');
+        return diff.as("milliseconds") <= 0
+            ? Duration.fromMillis(0)
+            : diff;
+    }
+
+    function checkExpiration(end: DateTime, now: DateTime): boolean {
+        return end <= now;
+    }
+
+    function getClockLikeDiff(duration: Duration): string {
+        return duration
+            .shiftTo("hours", "minutes", "seconds")
+            .toFormat("hh:mm:ss");
+    }
+
+    function buildIntervalFromDuration(input: DurationInput): Interval {
+        const start = DateTime.now();
+
+        const end = start.plus({
+            days: input.days ?? 0,
+            hours: input.hours ?? 0,
+            minutes: input.minutes ?? 0,
+            seconds: input.seconds ?? 0
+        });
+
+        debugger;
+
+        const interval = Interval.fromDateTimes(start, end);
+
+        if (!interval.isValid) {
+            throw new Error("Failed to build interval from duration");
         }
 
-        if (!isoBegin.isValid) {
-            throw new Error('Starting date is invalid');
-        }
-
-        const diff = DateTime.fromISO(end).diff(DateTime.fromISO(begin));
-
-        if (!diff.isValid) {
-            throw new Error('Diff date is invalid');
-        }
-
-        return diff;
+        return interval;
     }
 
     return {
-        getDuration,
-        getIsoRangeString,
-        getIsoStartAndInterval,
-        getIsoFromSelectors,
+        getDateTimeElements,
+        getRemains,
         checkExpiration,
-        getDiff,
+        getClockLikeDiff,
+        buildIntervalFromDuration
     };
 }

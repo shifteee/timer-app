@@ -25,8 +25,8 @@ function createParser(): Mocked<IMapper<SerializedTimer, Timer>> {
     let result: SerializedTimer | Timer | undefined;
 
     return {
-        parse: vi.fn().mockImplementation(() => result),
-        serialize: vi.fn().mockImplementation(() => result),
+        toDomain: vi.fn().mockImplementation(() => result),
+        toStorage: vi.fn().mockImplementation(() => result),
     };
 }
 
@@ -55,7 +55,7 @@ describe('TimerRepository', () => {
         const result = await repository.get('work');
 
         expect(result).toBeUndefined();
-        expect(parserMock.parse).not.toHaveBeenCalled();
+        expect(parserMock.toDomain).not.toHaveBeenCalled();
     });
 
     it('returns parsed timer when exists', async () => {
@@ -66,14 +66,14 @@ describe('TimerRepository', () => {
             }
         });
 
-        parserMock.parse.mockReturnValue({
+        parserMock.toDomain.mockReturnValue({
             label: 'work',
             interval,
         });
 
         const result = await repository.get('work');
 
-        expect(parserMock.parse).toHaveBeenCalled();
+        expect(parserMock.toDomain).toHaveBeenCalled();
         expect(result).toEqual({
             label: 'work',
             interval,
@@ -102,7 +102,7 @@ describe('TimerRepository', () => {
             }
         });
 
-        parserMock.parse.mockReturnValue({
+        parserMock.toDomain.mockReturnValue({
             label: 'work',
             interval,
         });
@@ -110,7 +110,7 @@ describe('TimerRepository', () => {
         const result = await repository.getAll();
 
         expect(result.length).toBe(1);
-        expect(parserMock.parse).toHaveBeenCalledTimes(1);
+        expect(parserMock.toDomain).toHaveBeenCalledTimes(1);
     });
 
     it('adds new timer to storage', async () => {
@@ -119,7 +119,7 @@ describe('TimerRepository', () => {
             value: {}
         });
 
-        parserMock.serialize.mockReturnValue({
+        parserMock.toStorage.mockReturnValue({
             label: 'work',
             interval: interval.toISOTime(),
         });
@@ -131,7 +131,7 @@ describe('TimerRepository', () => {
             interval,
         });
 
-        expect(parserMock.serialize).toHaveBeenCalled();
+        expect(parserMock.toStorage).toHaveBeenCalled();
 
         expect(transportMock.save).toHaveBeenCalledWith(
             storageKey,
