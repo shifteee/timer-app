@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useNow } from '@vueuse/core';
 
+import { Trash2 } from 'lucide-vue-next';
 import useDateTime from '~/composables/useDateTime';
 import useTimerApi from '~/composables/useTimersApi';
 
@@ -45,13 +46,15 @@ async function handleDelete() {
             {{ diff }}
         </span>
 
-        <button
+        <i
+            role="button"
+            tabindex="0"
+            aria-label="Delete timer"
             class="timer__delete"
-            type="button"
             @click="handleDelete"
         >
-            Delete
-        </button>
+            <Trash2 />
+        </i>
     </div>
 </template>
 <style scoped>
@@ -89,7 +92,7 @@ async function handleDelete() {
 }
 
 .timer__delete {
-    @apply text-sm
+    @apply cursor-pointer text-sm
         text-red-500
         hover:text-red-600
         transition;
