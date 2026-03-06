@@ -1,43 +1,104 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useCountdown } from '@vueuse/core';
-import { DateTime, Interval } from 'luxon';
+import { computed } from 'vue';
+import { useNow } from '@vueuse/core';
+import { DateTime } from 'luxon';
 
 import useDateTime from '../composables/useDateTime';
+import useTimerApi from '../composables/useTimersApi';
 
-const { checkExpiration, getDiff } = useDateTime();
+import { TIMER_DELETED } from '../events/events';
+import timerEventBus from '../events/timerEventBus';
 
 const props = defineProps<{
     intervalIso: string;
-    nowIso: string;
+    label: string;
 }>();
+const {
+    getDateTimeElements,
+    getRemains,
+    checkExpiration,
+    getClockLikeDiff
+} = useDateTime();
+const now = useNow({ interval: 1000 });
+const { end } = getDateTimeElements(props.intervalIso);
+const nowDateTime = computed(() => DateTime.fromJSDate(now.value));
+const remains = computed(() => getRemains(end, nowDateTime.value));
+const isExpired = computed(() => checkExpiration(end, nowDateTime.value));
+const diff = computed(() => getClockLikeDiff(remains.value));
 
-const isExpired = ref<boolean>(checkExpiration(props.intervalIso, props.nowIso));
+const { error, deleteTimer } = useTimerApi();
 
-useCountdown(getDiff(props.intervalIso, props.nowIso).seconds, {
-    onComplete() {
-        isExpired.value = true;
-    },
-    onTick() {
+async function handleDelete() {
+    const key = props.label;
+    
+    await deleteTimer(key);
 
-    }
-});
-
-const humanDiff = computed<string>(() => {
-    const interval = Interval.fromISO(props.intervalIso);
-    const end = interval.end?.toISO();
-
-    if (isExpired) {
-        return '00:00:00';
-    }
-
-    if (!end) {
-        throw new Error('Wrong DateTime format');
-    }
-
-    return getDiff(props.nowIso, end).toISOTime({ suppressMilliseconds: true }) ?? '';
-});
+    timerEventBus.emit(TIMER_DELETED, key);
+}
 </script>
 <template>
-    <span>{{ humanDiff }}</span>
+    <div class="timer" :class="{ 'timer--expired': isExpired }">
+        <span v-if="error"> {{ error }}</span>
+        <span class="timer__label">
+            {{ label }}
+        </span>
+
+        <span class="timer__diff">
+            {{ diff }}
+        </span>
+
+        <button
+            class="timer__delete"
+            type="button"
+            @click="handleDelete"
+        >
+            Delete
+        </button>
+    </div>
 </template>
+<style scoped>
+@reference "tailwindcss";
+
+.timer {
+    @apply flex
+        items-center
+        justify-between
+        px-3
+        py-2
+        rounded-lg
+        text-gray-800
+        dark:text-gray-200
+        hover:bg-gray-50
+        dark:hover:bg-gray-700
+        transition;
+}
+
+.timer--expired {
+    @apply text-gray-400
+        dark:text-gray-500
+        line-through;
+}
+
+.timer__label {
+    @apply font-medium
+        text-gray-800;
+}
+
+.timer__diff {
+    @apply text-sm
+        text-gray-500
+        tabular-nums;
+}
+
+.timer__delete {
+    @apply text-sm
+        text-red-500
+        hover:text-red-600
+        transition;
+}
+
+.timer--expired {
+    @apply text-gray-400
+        line-through;
+}
+</style>

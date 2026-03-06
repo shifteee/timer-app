@@ -2,11 +2,11 @@
 const props = defineProps<{
     options :string[],
 }>();
-const inputValue = defineModel<string>('inputValue');
+const inputValue = defineModel<number>('inputValue');
 const emit = defineEmits(['selected']);
 
 function select(index :number) {
-    inputValue.value = index.toString();
+    inputValue.value = index; 
 
     emit('selected');
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, useTemplateRef } from 'vue';
 import { onClickOutside } from '@vueuse/core';
+
 import type { ComponentPublicInstance } from 'vue';
 
 import Chevron from './Chevron.vue';
@@ -15,16 +16,17 @@ const props = withDefaults(defineProps<{
     max: 10,
     placeholder : 'Input value',
 });
+const modelValue = defineModel<number>('modelValue');
 const isExpanded = ref<boolean>(false);
-const inputValue = ref<string>('');
+// const inputValue = ref<string>('');
 const dropdownEl = useTemplateRef<ComponentPublicInstance>('dropdown');
 
 const options = (new Array(props.max - props.min))
     .fill(0)
     .map((val :undefined, index :number) => (props.min + index).toString());
 
-watch(inputValue, (value) => {
-    if (value && value.length) {
+watch(modelValue, (value) => {
+    if (value) {
         isExpanded.value = false;
     }
 });
@@ -46,8 +48,8 @@ onClickOutside(dropdownEl, (e) => {
             <input
                 id="selector-input"
                 class="selector__input"
-                type="text"
-                v-model="inputValue"
+                type="number"
+                v-model="modelValue"
                 :placeholder="props.placeholder"
                 autocomplete="off"
                 aria-controls="selector-select"
@@ -61,7 +63,7 @@ onClickOutside(dropdownEl, (e) => {
         <Dropdown
             ref="dropdown"
             v-if="isExpanded"
-            v-model:inputValue="inputValue"
+            v-model:inputValue="modelValue"
             :options="options"
             class="selector__dropdown"
         ></Dropdown>
@@ -71,21 +73,32 @@ onClickOutside(dropdownEl, (e) => {
 <style scoped>
 @reference "tailwindcss";
 
-.selector {
-    @apply relative;
-}
-
 .selector__control {
     @apply flex items-center
-        border border-gray-300 rounded-md
-        px-2 py-1
+        border border-gray-200
+        rounded-md
+        px-3 py-2
+        bg-white
+        hover:border-gray-300
+        transition;
 }
 
 .selector__input {
-    @apply flex-1 outline-none
+    @apply flex-1
+        text-sm
+        outline-none
+        bg-transparent;
 }
 
-.raw-select_visible_false {
-    display: none;
+.selector__dropdown {
+    @apply absolute
+        mt-1
+        w-full
+        bg-white
+        border
+        border-gray-200
+        rounded-md
+        shadow-md
+        z-10;
 }
 </style>

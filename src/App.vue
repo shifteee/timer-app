@@ -1,51 +1,80 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { useColorMode } from '@vueuse/core'
 
-import Selector from './Components/Selector/Selector.vue';
 import Timers from './Components/Timers/Timers.vue';
+import Form from './Components/Form/Form.vue';
+import { computed } from 'vue';
 
-import useTimers from './Components/composables/useDateTime';
+const mode = useColorMode()
+const toggleTheme = () => {
+    mode.value = mode.value === 'dark'
+        ? 'light'
+        : 'dark'
+};
+const label = computed(() =>
+    mode.value === 'dark'
+        ? 'Light mode'
+        : 'Dark mode'
+);
 
-const days = ref<number>(0);
-const hours = ref<number>(0);
-const minutes = ref<number>(0);
-const seconds = ref<number>(0);
-const timer = useTimers();
-
-async function saveTimer() {
-    // Learn more about Tauri commands at https://v1.tauri.app/v1/guides/features/command
-    // greetMsg.value = await invoke("save_timer", { name: name.value });
-}
 </script>
-
 <template>
-    <div class="wrapper">
-        <Selector 
-            placeholder="Input days"
-        />
-        <Selector 
-            placeholder="Input hours"
-        />
-        <Selector 
-            placeholder="Input minutes"
-        />
-        <Selector 
-            placeholder="Input seconds"
-        />
-        <Timers />
-    </div>
-</template>
+    <main class="app">
+        <h1 class="app__title">
+            Timers
+        </h1>
+        <button
+            class="theme-switcher"
+            @click="toggleTheme"
+        >
+            {{ label }}
+        </button>
 
+        <div class="app__grid">
+            <Form />
+            <Timers />
+        </div>
+    </main>
+</template>
 <style>
-@import "tailwindcss";
-@import "tailwindcss/preflight.css" layer(base);
-</style>
-<style scoped>
 @reference "tailwindcss";
 
-.wrapper {
-    @apply w-screen h-screen
-    p-2
-    grid grid-cols-4 gap-4;
+.app {
+    @apply min-h-screen
+        flex flex-col
+        items-center
+        pt-16
+        gap-10
+        bg-gray-100
+        dark:bg-gray-900
+        transition-colors;
+}
+
+.app__header {
+    @apply flex
+        items-center
+        gap-6;
+}
+
+.app__title {
+    @apply text-3xl
+        font-semibold
+        text-gray-800
+        dark:text-gray-100;
+}
+
+.theme-switcher {
+    @apply text-sm
+        px-3
+        py-1
+        rounded-md
+        border
+        border-gray-300
+        dark:border-gray-600
+        text-gray-700
+        dark:text-gray-200
+        hover:bg-gray-200
+        dark:hover:bg-gray-700
+        transition;
 }
 </style>

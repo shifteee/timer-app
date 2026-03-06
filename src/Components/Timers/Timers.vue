@@ -1,33 +1,31 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
-import { DateTime } from 'luxon';
+import { onBeforeMount } from 'vue';
 
-import useApi from '../composables/useApi';
 import Time from './Time.vue';
 
-const timers = ref<string[]>([]);
-const now = DateTime.now();
+import useTimersApi from '../composables/useTimersApi';
+import timerEventBus from '../events/timerEventBus';
+import { TIMER_DELETED, TIMER_ADDED } from '../events/events';
 
-onBeforeMount(async () => {
-    const api = useApi();
+const { loadTimers, error, timers } = useTimersApi();
 
-    try {
-        const storedTimers = await api.call<string[]>('get_timers');
-        
-        timers.value = storedTimers;
-    } catch (error) {
-        console.error('Failed to load timers', error);
+timerEventBus.on(async (event) => {
+    if(event === TIMER_DELETED || event === TIMER_ADDED) {
+        await loadTimers();
     }
 });
+
+onBeforeMount(loadTimers);
 </script>
 <template>
 <section class="timers">
     <h2>Saved timers:</h2>
     <ul>
-        <li v-for="timer in timers" :key="timer">
+        <li v-if="error">{{ error }}</li>
+        <li v-for="timer in timers" :key="timer.label">
             <Time
-                :intervalIso="timer"
-                :nowIso="now.toISO()"
+                :label="timer.label"
+                :intervalIso="timer.interval.toISO()"
             />
         </li>
     </ul>
@@ -38,5 +36,19 @@ onBeforeMount(async () => {
 
 .timers {
     @apply col-span-4
+        bg-white
+        dark:bg-gray-800
+        border
+        border-gray-200
+        dark:border-gray-700
+        rounded-xl
+        shadow-sm
+        p-4;
+}
+
+.timers ul {
+    @apply flex
+        flex-col
+        gap-2;
 }
 </style>
