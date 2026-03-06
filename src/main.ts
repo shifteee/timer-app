@@ -1,9 +1,12 @@
-import { createApp, provide } from 'vue';
+import { createApp } from 'vue';
 
 import App from './App.vue';
-import StorageTransport from './transports/webStorage';
-import TauriTransport from './transports/tauri';
-import { TransportKey } from './transports/transport';
+import StorageTransport from './transports/WebStorage';
+import TauriTransport from './transports/TauriTransport';
+import TimerRepository from './repos/TimerRepository';
+import { LuxonTimeAdapter } from './Adapters/LuxonTimeAdapter';
+import TimeMapper from './Mappers/TimeMapper';
+import { ReposytoryKey } from './repos/repos';
 
 function isTauriRuntime(): boolean {
     if (typeof window === 'undefined') return false;
@@ -12,6 +15,12 @@ function isTauriRuntime(): boolean {
     return Boolean(tauri?.ipc?.invoke);
 }
 
-provide(TransportKey, isTauriRuntime() ? new TauriTransport() : new StorageTransport());
+const repository = new TimerRepository(
+    isTauriRuntime() ? new TauriTransport() : new StorageTransport(),
+    new TimeMapper(new LuxonTimeAdapter()),
+)
 
-createApp(App).mount("#app");
+const app = createApp(App);
+
+app.provide(ReposytoryKey, repository);
+app.mount("#app");
