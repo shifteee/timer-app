@@ -9,7 +9,7 @@ import ThemeSwitcher from './Components/atoms/ThemeSwitcher/ThemeSwitcher.vue';
             <ThemeSwitcher />
         </header>
 
-        <div class="app__wrapper timers">
+        <div class="app__wrapper">
             <Form />
             <Timers/>
         </div>

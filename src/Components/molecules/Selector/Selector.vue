@@ -45,7 +45,6 @@ onClickOutside(dropdownEl, (e) => {
     <div class="selector">
         <div class="selector__control">
             <input
-                id="selector-input"
                 class="selector__input"
                 type="number"
                 v-model="modelValue"
@@ -83,10 +82,25 @@ onClickOutside(dropdownEl, (e) => {
 }
 
 .selector__input {
-    @apply flex-1
-        text-sm
+    @apply text-sm
+        bg-transparent
+        appearance-none
         outline-none
-        bg-transparent;
+        border-none
+        ring-0
+        focus:outline-none
+        focus:ring-0
+        focus:border-none;
+}
+
+.selector__input::-webkit-outer-spin-button,
+.selector__input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.selector__input[type='number'] {
+    -moz-appearance: textfield;
 }
 
 .selector__dropdown {

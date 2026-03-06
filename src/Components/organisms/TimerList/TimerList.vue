@@ -19,10 +19,18 @@ onBeforeMount(loadTimers);
 </script>
 <template>
 <section class="timers">
-    <h2>Saved timers:</h2>
-    <ul>
-        <li v-if="error">{{ error }}</li>
-        <li v-for="timer in timers" :key="timer.label">
+    <h2 class="timers__header">Saved timers:</h2>
+    <ul class="timers__list">
+        <li 
+            v-if="error"
+            class="timers__item"
+        >
+            {{ error }}
+        </li>
+        <li
+            v-for="timer in timers" :key="timer.label"
+            class="timers__item"
+        >
             <Time
                 :label="timer.label"
                 :intervalIso="timer.interval.toISO()"
@@ -46,7 +54,7 @@ onBeforeMount(loadTimers);
         p-4;
 }
 
-.timers ul {
+.timers__item {
     @apply flex
         flex-col
         gap-2;
