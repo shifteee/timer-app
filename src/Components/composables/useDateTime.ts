@@ -7,6 +7,10 @@ export type DurationInput = {
     seconds?: number;
 };
 
+function toDateTime(date: Date): DateTime {
+    return DateTime.fromJSDate(date)
+}
+
 export default function useDateTime() {
 
     function getDateTimeElements(intervalIso: string) {
@@ -25,16 +29,18 @@ export default function useDateTime() {
         return { start, end };
     }
 
-    function getRemains(end: DateTime, now: DateTime): Duration {
-        const diff = end.diff(now);
+    function getRemains(end: DateTime, now: Date): Duration {
+        const nowDateTime = toDateTime(now);
+        const diff = end.diff(nowDateTime);
 
         return diff.as("milliseconds") <= 0
             ? Duration.fromMillis(0)
             : diff;
     }
 
-    function checkExpiration(end: DateTime, now: DateTime): boolean {
-        return end <= now;
+    function checkExpiration(end: DateTime, now: Date): boolean {
+        const nowDateTime = toDateTime(now);
+        return end <= nowDateTime;
     }
 
     function getClockLikeDiff(duration: Duration): string {

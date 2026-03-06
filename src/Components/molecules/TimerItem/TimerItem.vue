@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useNow } from '@vueuse/core';
-import { DateTime } from 'luxon';
 
 import useDateTime from '~/composables/useDateTime';
 import useTimerApi from '~/composables/useTimersApi';
@@ -21,16 +20,14 @@ const {
 } = useDateTime();
 const now = useNow({ interval: 1000 });
 const { end } = getDateTimeElements(props.intervalIso);
-const nowDateTime = computed(() => DateTime.fromJSDate(now.value));
-const remains = computed(() => getRemains(end, nowDateTime.value));
-const isExpired = computed(() => checkExpiration(end, nowDateTime.value));
+const remains = computed(() => getRemains(end, now.value));
+const isExpired = computed(() => checkExpiration(end, now.value));
 const diff = computed(() => getClockLikeDiff(remains.value));
-
 const { error, deleteTimer } = useTimerApi();
 
 async function handleDelete() {
     const key = props.label;
-    
+
     await deleteTimer(key);
 
     timerEventBus.emit(TIMER_DELETED, key);
@@ -38,7 +35,8 @@ async function handleDelete() {
 </script>
 <template>
     <div class="timer" :class="{ 'timer--expired': isExpired }">
-        <span v-if="error"> {{ error }}</span>
+        <span v-if="error">{{ error }}</span>
+
         <span class="timer__label">
             {{ label }}
         </span>
@@ -95,10 +93,5 @@ async function handleDelete() {
         text-red-500
         hover:text-red-600
         transition;
-}
-
-.timer--expired {
-    @apply text-gray-400
-        line-through;
 }
 </style>
