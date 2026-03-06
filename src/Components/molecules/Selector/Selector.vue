@@ -4,8 +4,8 @@ import { onClickOutside } from '@vueuse/core';
 
 import type { ComponentPublicInstance } from 'vue';
 
-import Chevron from './Chevron.vue';
-import Dropdown from './Dropdown.vue';
+import Chevron from '~/atoms/Chevron/Chevron.vue';
+import Dropdown from '~/molecules/Dropdown/Dropdown.vue';
 
 const props = withDefaults(defineProps<{
     min? :number,
@@ -18,7 +18,6 @@ const props = withDefaults(defineProps<{
 });
 const modelValue = defineModel<number>('modelValue');
 const isExpanded = ref<boolean>(false);
-// const inputValue = ref<string>('');
 const dropdownEl = useTemplateRef<ComponentPublicInstance>('dropdown');
 
 const options = (new Array(props.max - props.min))

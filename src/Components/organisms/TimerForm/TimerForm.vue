@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import Selector from '../Selector/Selector.vue';
+import Selector from '~/molecules/Selector/Selector.vue';
 
-import useDateTime from '../composables/useDateTime';
-import useTimersApi from '../composables/useTimersApi';
+import useDateTime from '~/composables/useDateTime';
+import useTimersApi from '~/composables/useTimersApi';
 
-import timerEventBus from '../events/timerEventBus';
-import { TIMER_ADDED } from '../events/events';
+import timerEventBus from '~/events/timerEventBus';
+import { TIMER_ADDED } from '~/events/events';
 
 const label = ref<string>('');
 const days = ref<number>();

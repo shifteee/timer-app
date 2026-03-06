@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useColorMode } from '@vueuse/core'
 
-import Timers from './Components/Timers/Timers.vue';
-import Form from './Components/Form/Form.vue';
+import Timers from './Components/organisms/TimerList/TimerList.vue';
+import Form from './Components/organisms/TimerForm/TimerForm.vue';
 import { computed } from 'vue';
 
 const mode = useColorMode()

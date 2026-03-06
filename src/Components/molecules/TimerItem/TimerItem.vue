@@ -3,11 +3,11 @@ import { computed } from 'vue';
 import { useNow } from '@vueuse/core';
 import { DateTime } from 'luxon';
 
-import useDateTime from '../composables/useDateTime';
-import useTimerApi from '../composables/useTimersApi';
+import useDateTime from '~/composables/useDateTime';
+import useTimerApi from '~/composables/useTimersApi';
 
-import { TIMER_DELETED } from '../events/events';
-import timerEventBus from '../events/timerEventBus';
+import { TIMER_DELETED } from '~/events/events';
+import timerEventBus from '~/events/timerEventBus';
 
 const props = defineProps<{
     intervalIso: string;

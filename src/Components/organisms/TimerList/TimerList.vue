@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
 
-import Time from './Time.vue';
+import Time from '~/molecules/TimerItem/TimerItem.vue';
 
-import useTimersApi from '../composables/useTimersApi';
-import timerEventBus from '../events/timerEventBus';
-import { TIMER_DELETED, TIMER_ADDED } from '../events/events';
+import useTimersApi from '~/composables/useTimersApi';
+import timerEventBus from '~/events/timerEventBus';
+import { TIMER_DELETED, TIMER_ADDED } from '~/events/events';
 
 const { loadTimers, error, timers } = useTimersApi();
 
