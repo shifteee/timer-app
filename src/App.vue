@@ -1,34 +1,13 @@
 <script setup lang="ts">
-import { useColorMode } from '@vueuse/core'
-
 import Timers from './Components/organisms/TimerList/TimerList.vue';
 import Form from './Components/organisms/TimerForm/TimerForm.vue';
-import { computed } from 'vue';
-
-const mode = useColorMode()
-const toggleTheme = () => {
-    mode.value = mode.value === 'dark'
-        ? 'light'
-        : 'dark'
-};
-const label = computed(() =>
-    mode.value === 'dark'
-        ? 'Light mode'
-        : 'Dark mode'
-);
-
+import ThemeSwitcher from './Components/atoms/ThemeSwitcher/ThemeSwitcher.vue';
 </script>
 <template>
     <main class="app">
-        <h1 class="app__title">
-            Timers
-        </h1>
-        <button
-            class="theme-switcher"
-            @click="toggleTheme"
-        >
-            {{ label }}
-        </button>
+        <header class="app-header">
+            <ThemeSwitcher />
+        </header>
 
         <div class="app__grid">
             <Form />
