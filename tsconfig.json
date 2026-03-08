@@ -36,8 +36,9 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "types.d.ts"
-, "tailwind.config.ts"  ],
+    "types.d.ts",
+    "tailwind.config.js"
+  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

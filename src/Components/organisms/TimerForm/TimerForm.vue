@@ -3,6 +3,8 @@ import { computed, ref } from 'vue';
 import { Save } from 'lucide-vue-next';
 
 import Selector from '~/molecules/Selector/Selector.vue';
+import Button from '~/ui/button/Button.vue';
+import Input from '~/ui/input/Input.vue';
 
 import useDateTime from '~/composables/useDateTime';
 import useTimersApi from '~/composables/useTimersApi';
@@ -43,92 +45,76 @@ async function save() {
 
     timerEventBus.emit(TIMER_ADDED);
 }
-
 </script>
 <template>
     <div class="timer-form">
-        <div
-            class="timer-form__item"
-        >
-            <input
-                type="text"
-                v-model="label"
-                placeholder="Input label"
-                class="timer-form__input"
-            />
-        </div>
-        <Selector
-            v-model="days"
-            class="timer-form__item"
-            placeholder="Input days"
-        />
-        <Selector
-            v-model="hours"
-            class="timer-form__item"
-            placeholder="Input hours"
-        />
-        <Selector
-            v-model="minutes"
-            class="timer-form__item"
-            placeholder="Input minutes"
-        />
-        <Selector
-            v-model="seconds"
-            class="timer-form__item"
-            placeholder="Input seconds"
-        />
-        <div
-            class="timer-form__item"
-        >
-            <button
-                class="timer-form__submit"
-                :disabled="isDisabled"
-                @click="save"
+        <div class="timer-form__wrapper">
+            <div
+                class="timer-form__item"
             >
-                <Save /> Save
-            </button>
+                <Input
+                    type="text"
+                    v-model="label"
+                    placeholder="Input label"
+                    class="timer-form__input"
+                />
+            </div>
+            <Selector
+                v-model="days"
+                class="timer-form__item"
+            />
+            <Selector
+                v-model="hours"
+                class="timer-form__item"
+                placeholder="Input hours"
+            />
+            <Selector
+                v-model="minutes"
+                class="timer-form__item"
+                placeholder="Input minutes"
+            />
+            <Selector
+                v-model="seconds"
+                class="timer-form__item"
+                placeholder="Input seconds"
+            />
+            <div
+                class="timer-form__item"
+            >
+                <Button
+                    aria-label="Submit"
+                    class="timer-form__submit"
+                    variant="action-primary"
+                    :disabled="isDisabled"
+                    @click="save"
+                >
+                    <Save /> Save
+                </Button>
+            </div>
         </div>
     </div>
 </template>
 <style>
-@reference "tailwindcss";
+@reference "@/style.css";
 
-.timer-form {
+.timer-form__wrapper {
     @apply col-span-2
-        bg-white
-        border
-        border-gray-200
-        rounded-xl
-        shadow-sm
         p-4
-        grid
-        grid-cols-1
-        gap-3;
+        grid grid-cols-1 gap-3;
 }
 
 .timer-form__input {
     @apply w-full
-        box-border border border-gray-200
+        box-border border border-border
         rounded-md
         px-3 py-2
         text-sm
         outline-none
         focus:ring-2
-        focus:ring-gray-300;
 }
 
 .timer-form__submit {
-    @apply inline-flex
-        w-full 
-        items-center
-        gap-2
-        px-3
-        py-2
-        rounded-md
-        bg-blue-500
-        text-white
-        hover:bg-blue-600
+    @apply w-full items-center
         transition;
-
 }
 </style>

@@ -1,11 +1,31 @@
 <script setup lang="ts">
 import { ref, watch, useTemplateRef } from 'vue';
 import { onClickOutside } from '@vueuse/core';
+import { ChevronsUpDown } from 'lucide-vue-next';
 
 import type { ComponentPublicInstance } from 'vue';
 
-import Chevron from '~/atoms/Chevron/Chevron.vue';
-import Dropdown from '~/molecules/Dropdown/Dropdown.vue';
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupButton,
+    InputGroupInput,
+} from '~/ui/input-group';
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from '~/ui/drawer';
+import {
+    Item,
+    ItemGroup,
+} from '~/ui/item';
+import Button from '~/ui/button/Button.vue';
 
 const props = withDefaults(defineProps<{
     min? :number,
@@ -17,101 +37,72 @@ const props = withDefaults(defineProps<{
     placeholder : 'Input value',
 });
 const modelValue = defineModel<number>('modelValue');
-const isExpanded = ref<boolean>(false);
-const dropdownEl = useTemplateRef<ComponentPublicInstance>('dropdown');
-
 const options = (new Array(props.max - props.min))
     .fill(0)
-    .map((val :undefined, index :number) => (props.min + index).toString());
+    .map((val :undefined, index :number) => (props.min + index));
 
-watch(modelValue, (value) => {
-    if (value) {
-        isExpanded.value = false;
-    }
-});
-
-onClickOutside(dropdownEl, (e) => {
-    if (!isExpanded.value) {
-        return;
-    }
-
-    e.stopPropagation();
-
-    isExpanded.value = false;
-});
+function setModelValue(val :number) {
+    modelValue.value = val;
+}
 </script>
 
 <template>
-    <div class="selector">
-        <div class="selector__control">
-            <input
-                class="selector__input"
-                type="number"
-                v-model="modelValue"
+    <Drawer class="selector">
+        <InputGroup>
+            <InputGroupInput
                 :placeholder="props.placeholder"
-                autocomplete="off"
-                aria-controls="selector-select"
-                aria-autocomplete="list"
-                @click="isExpanded = isExpanded && false"
+                v-model="modelValue"
+                class="selector__input"
             />
-            <Chevron
-                v-model:expanded="isExpanded"
-            />
-        </div>
-        <Dropdown
-            ref="dropdown"
-            v-if="isExpanded"
-            v-model:inputValue="modelValue"
-            :options="options"
-            class="selector__dropdown"
-        ></Dropdown>
-    </div>
+            <InputGroupAddon align="inline-end">
+                <DrawerTrigger>
+                    <InputGroupButton>
+                        <ChevronsUpDown />
+                    </InputGroupButton>
+                </DrawerTrigger>
+            </InputGroupAddon>
+        </InputGroup>
+        <DrawerContent>
+            <div class="selector__dropdown">
+                <DrawerHeader>
+                    <DrawerTitle>Quick selecion</DrawerTitle>
+                    <DrawerDescription>
+                        Choose one of:
+                    </DrawerDescription>
+                </DrawerHeader>
+                <ItemGroup class="selector__list selectable-list">
+                    <Item
+                        v-for="(option, index) in options"
+                        :key="`${option}-${index}`"
+                        class="selectable-list__item"
+                        size="sm"
+                        role="option"
+                        @click="setModelValue(option)"
+                    >
+                        {{ option }}
+                    </Item>
+                </ItemGroup>
+                <DrawerFooter class="flex-row">
+                    <DrawerClose as-child>
+                        <Button variant="action-primary">Submit</Button>
+                        <Button variant="outline">
+                            Cancel
+                        </Button>
+                    </DrawerClose>
+                </DrawerFooter>
+            </div>
+        </DrawerContent>
+    </Drawer>
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/style.css";
 
-.selector__control {
-    @apply flex items-center
-        border border-gray-200
-        rounded-md
-        px-3 py-2
-        bg-white
-        hover:border-gray-300
-        transition;
-}
-
-.selector__input {
-    @apply text-sm
-        bg-transparent
-        appearance-none
-        outline-none
-        border-none
-        ring-0
-        focus:outline-none
-        focus:ring-0
-        focus:border-none;
-}
-
-.selector__input::-webkit-outer-spin-button,
-.selector__input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.selector__input[type='number'] {
-    -moz-appearance: textfield;
+.selectable-list__item {
+    @apply hover:bg-secondary;
 }
 
 .selector__dropdown {
-    @apply absolute
-        mt-1
-        w-full
-        bg-white
-        border
-        border-gray-200
-        rounded-md
-        shadow-md
-        z-10;
+    @apply mx-auto w-full max-w-sm;
 }
 </style>

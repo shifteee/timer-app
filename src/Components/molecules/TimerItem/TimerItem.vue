@@ -8,6 +8,7 @@ import useTimerApi from '~/composables/useTimersApi';
 
 import { TIMER_DELETED } from '~/events/events';
 import timerEventBus from '~/events/timerEventBus';
+import Button from '~/ui/button/Button.vue';
 
 const props = defineProps<{
     intervalIso: string;
@@ -35,66 +36,64 @@ async function handleDelete() {
 }
 </script>
 <template>
-    <div class="timer" :class="{ 'timer--expired': isExpired }">
-        <span v-if="error">{{ error }}</span>
-
-        <span class="timer__label">
-            {{ label }}
-        </span>
-
-        <span class="timer__diff">
-            {{ diff }}
-        </span>
-
-        <i
-            role="button"
-            tabindex="0"
-            aria-label="Delete timer"
-            class="timer__delete"
-            @click="handleDelete"
-        >
-            <Trash2 />
-        </i>
+    <div class="timer" :class="{ 'timer_status_expired': isExpired }">
+        <div class="timer__wrapper">
+            <div
+                v-if="error"
+                class="timer__error">
+                {{ error }}
+            </div>
+            <div class="timer__label">
+                {{ label }}
+            </div>
+            <div class="timer__diff">
+                {{ diff }}
+            </div>
+            <div class="timer__delete">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    @click="handleDelete"
+                >
+                    <Trash2 />
+                </Button>
+            </div>
+        </div>
     </div>
 </template>
 <style scoped>
-@reference "tailwindcss";
+@reference '@/style.css';
 
 .timer {
-    @apply flex
-        items-center
-        justify-between
-        px-3
-        py-2
-        rounded-lg
-        text-gray-800
-        dark:text-gray-200
-        hover:bg-gray-50
-        dark:hover:bg-gray-700
-        transition;
+    @apply w-full;
 }
 
-.timer--expired {
-    @apply text-gray-400
-        dark:text-gray-500
-        line-through;
+.timer__wrapper {
+    @apply flex
+        gap-4
+        items-center
+        ;
+        
+}
+
+.timer_status_expired {
+    @apply text-muted-foreground line-through;
 }
 
 .timer__label {
-    @apply font-medium
-        text-gray-800;
+    @apply flex-1
+        text-sm font-medium truncate
+        ;
 }
 
 .timer__diff {
-    @apply text-sm
-        text-gray-500
-        tabular-nums;
+    @apply font-mono text-lg tracking-wide text-muted-foreground
+        ;
 }
 
 .timer__delete {
-    @apply cursor-pointer text-sm
-        text-red-500
-        hover:text-red-600
+    @apply flex-none
+        text-destructive
         transition;
 }
 </style>

@@ -2,7 +2,11 @@
 import { onBeforeMount } from 'vue';
 
 import Time from '~/molecules/TimerItem/TimerItem.vue';
-
+import {
+    Item,
+    ItemGroup,
+    ItemActions,
+ } from '~/ui/item';
 import useTimersApi from '~/composables/useTimersApi';
 import timerEventBus from '~/events/timerEventBus';
 import { TIMER_DELETED, TIMER_ADDED } from '~/events/events';
@@ -19,44 +23,40 @@ onBeforeMount(loadTimers);
 </script>
 <template>
 <section class="timers">
-    <h2 class="timers__header">Saved timers:</h2>
-    <ul class="timers__list">
-        <li 
-            v-if="error"
-            class="timers__item"
-        >
-            {{ error }}
-        </li>
-        <li
-            v-for="timer in timers" :key="timer.label"
-            class="timers__item"
-        >
-            <Time
-                :label="timer.label"
-                :intervalIso="timer.interval.toISO()"
-            />
-        </li>
-    </ul>
+    <div class="timers__wrapper">
+        <div class="timers__header">Saved timers:</div>
+        <ItemGroup class="timers__list">
+            <Item
+                v-for="timer in timers"
+                :key="timer.label"
+                size="sm"
+            >
+                <Time
+                    :label="timer.label"
+                    :intervalIso="timer.interval.toISO()"
+                />
+            </Item>
+        </ItemGroup>
+    </div>
 </section>
 </template>
 <style scoped>
-@reference "tailwindcss";
+@reference "@/style.css";
 
-.timers {
-    @apply col-span-4
-        bg-white
-        dark:bg-gray-800
-        border
-        border-gray-200
-        dark:border-gray-700
-        rounded-xl
-        shadow-sm
-        p-4;
+.timers__wrapper {
+    @apply flex flex-col
+        gap-4
+        ;
+}
+
+.timers__header {
+    @apply flex
+        self-center py-2
+        ;
 }
 
 .timers__item {
     @apply flex
-        flex-col
         gap-2;
 }
 </style>
