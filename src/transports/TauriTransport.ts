@@ -1,26 +1,26 @@
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 export default class TauriTransport<T> implements ITransport<T> {
-    async save<T, E extends Error>(key: string, value: T): Promise<Result<void, E>> {
+    async save(key: string, value: T): Promise<Result<void>> {
         try {
-            await invoke<void>('store_save', { key, value });
+            await invoke("set_timers", { key, value });
 
             return {
-                status: 'ok',
-                value: undefined,
+                status: "ok",
+                value: undefined
             };
+
         } catch (e) {
             return Promise.reject({
                 status: 'error',
-                error: e as E,
+                error: e as Error,
             });
         }
-
     }
 
-    async get<T, E extends Error>(key: string): Promise<Result<T, E>> {
+    async get(key: string): Promise<Result<T | undefined>> {
         try {
-            const result = await invoke<T>('store_get', { key })
+            const result = await invoke<T>("get_timers", { key });
 
             return {
                 status: 'ok',
@@ -29,8 +29,8 @@ export default class TauriTransport<T> implements ITransport<T> {
         } catch (e) {
             return Promise.reject({
                 status: 'error',
-                error: e as E,
-            })
+                error: e as Error,
+            });
         }
     }
 }

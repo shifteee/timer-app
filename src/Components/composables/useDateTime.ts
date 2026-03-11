@@ -40,6 +40,7 @@ export default function useDateTime() {
 
     function checkExpiration(end: DateTime, now: Date): boolean {
         const nowDateTime = toDateTime(now);
+
         return end <= nowDateTime;
     }
 
@@ -51,16 +52,12 @@ export default function useDateTime() {
 
     function buildIntervalFromDuration(input: DurationInput): Interval {
         const start = DateTime.now();
-
         const end = start.plus({
             days: input.days ?? 0,
             hours: input.hours ?? 0,
             minutes: input.minutes ?? 0,
             seconds: input.seconds ?? 0
         });
-
-        debugger;
-
         const interval = Interval.fromDateTimes(start, end);
 
         if (!interval.isValid) {

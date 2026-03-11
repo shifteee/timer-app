@@ -50,8 +50,9 @@ function setModelValue(val :number) {
     <Drawer class="selector">
         <InputGroup>
             <InputGroupInput
+                inputmode="numeric"
                 :placeholder="props.placeholder"
-                v-model="modelValue"
+                v-model.number="modelValue"
                 class="selector__input"
             />
             <InputGroupAddon align="inline-end">
@@ -103,6 +104,7 @@ function setModelValue(val :number) {
 }
 
 .selector__dropdown {
-    @apply mx-auto w-full max-w-sm;
+    @apply bg-background
+        mx-auto w-full max-w-sm;
 }
 </style>

@@ -1,5 +1,4 @@
-import type { Duration, Interval } from 'luxon';
-import type { Ref } from 'vue';
+import type { Interval } from 'luxon';
 
 declare global {
     type Timer = {
