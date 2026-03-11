@@ -43,6 +43,8 @@ The Vue application is responsible only for:
 All timer scheduling, persistence, and notifications are handled in Rust.
 
 #### Frontend Structure
+
+```
 src/
  ├─ adapters/
  │   └─ LuxonTimeAdapter.ts
@@ -62,6 +64,7 @@ src/
  |   └─ TimePapper.ts // toDomain <--> toStorage data mapping
  |
  └─ main.ts  // as initialision and composition
+```
 
 ### Layers
 
