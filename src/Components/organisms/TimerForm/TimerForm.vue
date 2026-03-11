@@ -18,7 +18,7 @@ const hours = ref<number>();
 const minutes = ref<number>();
 const seconds = ref<number>();
 const { buildIntervalFromDuration } = useDateTime();
-const { addTimer } = useTimersApi();
+const { error, addTimer } = useTimersApi();
 
 const interval = computed(() => buildIntervalFromDuration({
     days: days.value,
@@ -49,6 +49,7 @@ async function save() {
 <template>
     <div class="timer-form">
         <div class="timer-form__wrapper">
+            <div v-if="error">{{ error }}</div>
             <div
                 class="timer-form__item"
             >

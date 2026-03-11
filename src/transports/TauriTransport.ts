@@ -3,7 +3,7 @@ import { invoke } from '@tauri-apps/api/core';
 export default class TauriTransport<T> implements ITransport<T> {
     async save(key: string, value: T): Promise<Result<void>> {
         try {
-            await invoke("save_storage", { key, value });
+            await invoke("set_timers", { key, value });
 
             return {
                 status: "ok",
@@ -20,7 +20,7 @@ export default class TauriTransport<T> implements ITransport<T> {
 
     async get(key: string): Promise<Result<T | undefined>> {
         try {
-            const result = await invoke<T>("get_storage", { key });
+            const result = await invoke<T>("get_timers", { key });
 
             return {
                 status: 'ok',
